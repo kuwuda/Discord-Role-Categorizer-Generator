@@ -1,7 +1,8 @@
-# Discord-Role-Categorizer-Generator
+# Discord Role Category Generator
 lmao im bad at names
 
 Spaces out names to categorize discord roles
+
 For example:
 
 "Classic Roles" would turn into
