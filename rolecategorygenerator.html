@@ -1,0 +1,134 @@
+<!DOCTYPE text/html>
+<html>
+	<meta charset="utf-8" />
+	<head>
+		<script>
+			function convertCharToMonospace(input) {
+				// 65 = A, 90 = Z
+				if (input.codePointAt(0) >= 65 && input.codePointAt(0) <= 90) {
+					return String.fromCodePoint((input.codePointAt(0)-65)+0x1D670);
+				}
+				// 97 = a, 121 = z
+				else if (input.codePointAt(0) >= 97 && input.codePointAt(0) <= 121) {
+					return String.fromCodePoint((input.codePointAt(0)-71)+0x1D670);
+				}
+				// 48 = 0, 57 = 9
+				else if (input.codePointAt(0) >= 48 && input.codePointAt(0) <= 57) {
+					return String.fromCodePoint((input.codePointAt(0)-48)+0x1D7F6);
+				} 
+				else {
+					return input;
+				}
+			}
+			function convertStringToMonospace(input) {
+				var out = "";
+				var i;
+				for (i = 0; i != input.length; i++) {
+					out += convertCharToMonospace(input.charAt(i));
+				}
+				return out;
+			}
+			function onClick($this) {
+				var val = $this.previousElementSibling.value;
+				if (val == '') {
+					document.getElementById('out').value="no input :c";
+				} else {
+					var mono = document.getElementById('monospace').checked;
+					var emoji = document.getElementById('emoji').value;
+					var emojiLen = emoji.length;
+
+					if (mono) {
+						val = convertStringToMonospace(val);
+					}
+
+					var len = document.getElementById('len').value;
+					//so it isn't interpreted as a string
+					len = parseInt(len);
+					var valLen = val.length;
+
+					// end padding will be longer by 1 if uneven
+					var out;
+					// space character is U+205F
+					var tmp = val.padStart((len+valLen)/2, ' ');
+					out = tmp.padEnd(len, ' ');
+					tmp = out;
+					out = tmp.padStart(len+emojiLen, emoji);
+					tmp = out;
+					out = tmp.padEnd(len+(emojiLen*2), emoji);
+
+					document.getElementById('out').value=out;
+					document.getElementById('out').select();
+					document.execCommand('copy');
+				}
+			}
+		</script>
+		<style>
+			body {
+				margin: 0;
+				background-color: #1a1a1a;
+				color: #bcbcbc;
+				font-family: sans-serif;
+			}
+
+			span {
+				font-weight: bold;
+			}
+
+			input[type=text],
+			input[type=password] {
+				padding: 0;
+				margin: 0;
+				color: #fff;
+				background-color: transparent;
+				border: none;
+				border-bottom: 1px solid #9e9e9e;
+				outline: none;
+				height: 20px;
+				position: relative;
+				left: 0;
+				font-size: 16px;
+			}
+
+			input[type=button],
+			input[type=submit],
+			button {
+				margin: 0 2px 0 0;
+				height: 26px;
+				padding: 0 4px;
+				border: none;
+				outline: 0;
+				color: #fff;
+				background-color: #c8147a;
+				text-align: center;
+				letter-spacing: 0.5px;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<span>Target Length (in chars, does not count emoji):</span>
+			<input type="text" id="len" size="1" value=42 />
+			<span>Emoji:</span>
+			<input type="text" id="emoji" size="1" value="🐈" />
+			<span>Monospace:</span>
+			<input type="checkbox" id="monospace" checked />
+		</div>
+		<div>
+			<span>Input:</span>
+			<input type="text" id="in" name="in" size="34" />
+			<button onclick="onClick(this)">Format</button>
+		</div>
+		<div>
+			<span>Output:</span>
+			<input type="text" id="out" name="out" size="32" />
+		</div>
+		<div>
+			<span>Note that checking "Monospace" will convert some characters to the unicode "mathematical monospace" characters.</span>
+			<br />
+			<span>There aren't glyphs for punctuation etc. in this (that I know of), so stuff like punctuation will not be monospace.</span>
+			<br />
+			<span>Only alphanumeric characters (A-Z,a-z,0-1) are converted. This means that anything else might make spacing inconsistent.</span> 
+		</div>
+	</body>
+</html>
